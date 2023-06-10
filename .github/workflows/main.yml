@@ -44,8 +44,10 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Delete untagged
-        uses: Chizkiyahu/delete-untagged-ghcr-action@v2
+      - name: Delete old images
+        uses: bots-house/ghcr-delete-image-action@v1.1.0
         with:
+          owner: ${{github.repository_owner}}
+          name: sandbox-dev-container
           token: ${{ secrets.GITHUB_TOKEN }}
+          untagged-keep-latest: 2
