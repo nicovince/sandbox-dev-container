@@ -45,9 +45,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: List container versions
+      - name: Clean untagged container versions
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh extension install nicovince/gh-container
+          gh container versions ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
+          gh container clean --untagged
           gh container versions ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
