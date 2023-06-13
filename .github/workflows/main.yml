@@ -2,7 +2,7 @@ name: Build Sandbox Container
 on:
   push:
    schedule:
-     - cron: 50 04 13 06 *
+     - cron: 55 04 13 * *
 
 env:
   REGISTRY: ghcr.io
