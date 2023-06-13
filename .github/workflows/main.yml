@@ -11,6 +11,7 @@ jobs:
   build-push:
     permissions:
       contents: read
+      packages: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,11 +47,17 @@ jobs:
           provenance: false
 
       - name: Clean untagged container versions
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
+          package-type: 'container'
+          min-versions-to-keep: 3
+          delete-only-untagged-versions: 'true'
+
+      - name: List versions
         env:
           GH_TOKEN: ${{ github.token }}
           PKG_NAME: ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
         run: |
           gh extension install nicovince/gh-container
-          gh container versions ${PKG_NAME}
-          gh container clean ${PKG_NAME} --untagged
           gh container versions ${PKG_NAME}
