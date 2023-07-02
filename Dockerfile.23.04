@@ -12,20 +12,20 @@ RUN apt-get update \
     && yes | unminimize \
     && echo 'done'
 
-RUN adduser nicolas \
-    && adduser nicolas --add_extra_groups sudo
+RUN adduser sandworm \
+    && adduser sandworm --add_extra_groups sudo
 # Disable password for sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-USER nicolas
-WORKDIR /home/nicolas
+USER sandworm
+WORKDIR /home/sandworm
 RUN python3 -m venv .venv && \
     . .venv/bin/activate && \
     pip install pre-commit ruamel.yaml
 
 RUN git clone https://nicovince@github.com/nicovince/bin.git && \
     git clone --recurse-submodules https://nicovince@github.com/nicovince/vimrc.git .vim && \
-    echo 'source $HOME/.vim/vimrc.vim' > /home/nicolas/.vimrc && \
+    echo 'source $HOME/.vim/vimrc.vim' > /home/sandworm/.vimrc && \
     cd .vim && \
     find pack -name "doc" -exec vim -u NONE -c "helptags {}" -c q \; && \
     cd && \
