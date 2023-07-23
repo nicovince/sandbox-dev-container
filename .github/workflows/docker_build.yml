@@ -5,6 +5,10 @@ on:
         required: true
         type: string
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{github.repository}}
+
 jobs:
   build:
     permissions:
@@ -31,7 +35,7 @@ jobs:
       - name: Suffix docker tag with version
         id: tag-suffixing
         run: |
-          suffixed_tag="$(echo "${{ steps.meta.outputs.tags }}" | sed 's/${{github.ref_name}}/${{github.ref_name}}-${{inputs.version}}/') | sed '/nightly/d'"
+          suffixed_tag="$(echo "${{ steps.meta.outputs.tags }}" | sed 's/${{github.ref_name}}/${{github.ref_name}}-${{inputs.version}}/' | sed '/nightly/d')"
           echo "suffixed_tag=${suffixed_tag}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Set up QEMU

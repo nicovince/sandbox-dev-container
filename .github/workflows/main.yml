@@ -10,115 +10,19 @@ env:
 
 
 jobs:
-  build-latest:
+  build-22_04:
     permissions:
       contents: read
       packages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    uses: ./.github/workflows/docker_build.yml
+    with:
+      version: "22.04"
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          provenance: false
-
-      - name: Clean untagged container versions
-        uses: actions/delete-package-versions@v4
-        with:
-          package-name: ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
-
-      - name: List versions
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PKG_NAME: ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
-        run: |
-          gh extension install nicovince/gh-container
-          gh container versions ${PKG_NAME}
-
-  build-rolling:
+  build-23_04:
     permissions:
       contents: read
       packages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Update tags for rolling version
-        id: meta-rolling
-        run: |
-          rolling_tag="$(echo ${{ steps.meta.outputs.tags }} | sed 's/${{github.ref_name}}/rolling/')"
-          echo "rolling_tag=${rolling_tag}" | tee -a "$GITHUB_OUTPUT"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          file: Dockerfile.23.04
-          tags: ${{ steps.meta-rolling.outputs.rolling_tag }}
-          labels: ${{ steps.meta.outputs.labels }}
-          provenance: false
-
-      - name: Clean untagged container versions
-        uses: actions/delete-package-versions@v4
-        with:
-          package-name: ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
-
-      - name: List versions
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PKG_NAME: ${{fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title']}}
-        run: |
-          gh extension install nicovince/gh-container
-          gh container versions ${PKG_NAME}
+    uses: ./.github/workflows/docker_build.yml
+    with:
+      version: "23.04"
