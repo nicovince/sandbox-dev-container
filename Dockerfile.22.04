@@ -9,6 +9,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y gh \
     && apt-get install -y man-db sudo bash-completion \
+    && apt-get install -y shellcheck \
     && yes | unminimize \
     && echo 'done'
 
@@ -35,4 +36,4 @@ $(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
 $(git log -1 --format=%ae 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
 EOF
 
-CMD /bin/bash
+CMD /bin/bash -l
