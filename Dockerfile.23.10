@@ -1,7 +1,7 @@
-FROM ubuntu:23.04
+FROM ubuntu:23.10
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y vim git python-is-python3 python3-venv python3-pip python3-dbus \
+    && apt-get install -y vim git python-is-python3 python3-venv python3-pip python3-dbus pipx \
     && apt-get install -y fzf bc curl tmux file bat\
     && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
     && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
@@ -36,5 +36,7 @@ $(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
 $(git log -1 --format=%ae 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
 no
 EOF
+
+RUN echo "source .venv/bin/activate" >> ~/.bashrc
 
 CMD /bin/bash -l
