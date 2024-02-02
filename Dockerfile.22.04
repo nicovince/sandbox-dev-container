@@ -34,6 +34,7 @@ RUN git clone https://nicovince@github.com/nicovince/bin.git && \
     cd .dotfiles && ./init_config.sh <<EOF
 $(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
 $(git log -1 --format=%ae 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
+no
 EOF
 
 CMD /bin/bash -l
