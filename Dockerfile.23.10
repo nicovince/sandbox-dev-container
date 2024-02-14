@@ -15,6 +15,10 @@ RUN apt-get update \
 
 RUN adduser sandworm \
     && adduser sandworm --add_extra_groups sudo
+
+# pass some env variables when calling sudo
+RUN echo 'Defaults env_keep += "ftp_proxy http_proxy https_proxy no_proxy"' >> /etc/sudoers
+
 # Disable password for sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
