@@ -10,6 +10,7 @@ RUN apt-get update \
     && apt-get install -y gh \
     && apt-get install -y man-db sudo bash-completion \
     && apt-get install -y shellcheck \
+    && apt-get install -y wget \
     && yes | unminimize \
     && echo 'done'
 
@@ -40,5 +41,17 @@ $(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
 $(git log -1 --format=%ae 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
 no
 EOF
+
+# Setup neovim and link config to ~/.vimrc
+RUN wget https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz && \
+    mkdir -p ~/.local/share && \
+    tar xzf nvim-linux64.tar.gz -C ~/.local/share && \
+    rm -f nvim-linux64.tar.gz && \
+    cd ~/.local/bin/ && \
+    ln -sf ~/.local/share/nvim-linux64/bin/nvim nvim && \
+    mkdir -p ~/.config/nvim && \
+    echo 'set runtimepath^=~/.vim runtimepath+=~/.vim/after' > ~/.config/nvim/init.vim && \
+    echo 'let &packpath = &runtimepath' >> ~/.config/nvim/init.vim && \
+    echo 'source ~/.vimrc' >> ~/.config/nvim/init.vim
 
 CMD /bin/bash -l
