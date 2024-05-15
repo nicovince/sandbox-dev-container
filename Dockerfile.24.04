@@ -1,0 +1,61 @@
+FROM ubuntu:24.04
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y vim git python-is-python3 python3-venv python3-pip python3-dbus pipx \
+    && apt-get install -y fzf bc curl tmux file bat\
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y gh \
+    && apt-get install -y man-db sudo bash-completion \
+    && apt-get install -y shellcheck \
+    && apt-get install -y wget \
+    && yes | unminimize \
+    && echo 'done'
+
+RUN adduser sandworm \
+    && adduser sandworm --add_extra_groups sudo
+
+# pass some env variables when calling sudo
+RUN echo 'Defaults env_keep += "ftp_proxy http_proxy https_proxy no_proxy"' >> /etc/sudoers
+
+# Disable password for sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER sandworm
+WORKDIR /home/sandworm
+RUN python3 -m venv .venv && \
+    . .venv/bin/activate && \
+    pip install pre-commit ruamel.yaml
+
+RUN git clone https://nicovince@github.com/nicovince/bin.git && \
+    git clone --recurse-submodules https://nicovince@github.com/nicovince/vimrc.git .vim && \
+    echo 'source $HOME/.vim/vimrc.vim' > /home/sandworm/.vimrc && \
+    cd .vim && \
+    find pack -name "doc" -exec vim -u NONE -c "helptags {}" -c q \; && \
+    cd && \
+    git clone https://nicovince@github.com/nicovince/dotfiles.git .dotfiles && \
+    cd .dotfiles && ./init_config.sh <<EOF
+$(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
+$(git log -1 --format=%ae 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
+no
+EOF
+
+# Enable virtualenv out of the box
+RUN echo "source .venv/bin/activate" >> ~/.bashrc
+
+# Setup neovim and link config to ~/.vimrc
+RUN wget https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz && \
+    mkdir -p ~/.local/share && \
+    tar xzf nvim-linux64.tar.gz -C ~/.local/share && \
+    rm -f nvim-linux64.tar.gz && \
+    mkdir -p ~/.local/bin && \
+    cd ~/.local/bin/ && \
+    ln -sf ~/.local/share/nvim-linux64/bin/nvim nvim && \
+    mkdir -p ~/.config/nvim && \
+    echo 'set runtimepath^=~/.vim runtimepath+=~/.vim/after' > ~/.config/nvim/init.vim && \
+    echo 'let &packpath = &runtimepath' >> ~/.config/nvim/init.vim && \
+    echo 'source ~/.vimrc' >> ~/.config/nvim/init.vim
+
+CMD /bin/bash -l

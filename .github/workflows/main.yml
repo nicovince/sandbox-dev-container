@@ -26,3 +26,11 @@ jobs:
     uses: ./.github/workflows/docker_build.yml
     with:
       version: "23.10"
+
+  build-24_04:
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker_build.yml
+    with:
+      version: "24.04"
