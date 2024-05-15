@@ -10,27 +10,14 @@ env:
 
 
 jobs:
-  build-22_04:
+  build:
     permissions:
       contents: read
       packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntuversion: [ '22.04', '23.10', '24.04' ]
     uses: ./.github/workflows/docker_build.yml
     with:
-      version: "22.04"
-
-
-  build-23_10:
-    permissions:
-      contents: read
-      packages: write
-    uses: ./.github/workflows/docker_build.yml
-    with:
-      version: "23.10"
-
-  build-24_04:
-    permissions:
-      contents: read
-      packages: write
-    uses: ./.github/workflows/docker_build.yml
-    with:
-      version: "24.04"
+      version: "${{matrix.ubuntuversion}}"
