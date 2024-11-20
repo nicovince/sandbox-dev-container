@@ -1,4 +1,4 @@
-FROM ubuntu:23.10
+FROM ubuntu:24.10
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y vim git python-is-python3 python3-venv python3-pip python3-dbus pipx \
@@ -11,6 +11,7 @@ RUN apt-get update \
     && apt-get install -y man-db sudo bash-completion \
     && apt-get install -y shellcheck \
     && apt-get install -y wget \
+    && apt-get install -y unminimize \
     && yes | unminimize \
     && echo 'done'
 
