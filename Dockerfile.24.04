@@ -11,6 +11,7 @@ RUN apt-get update \
     && apt-get install -y man-db sudo bash-completion \
     && apt-get install -y shellcheck \
     && apt-get install -y wget \
+    && apt-get install -y unminimize \
     && yes | unminimize \
     && echo 'done'
 
