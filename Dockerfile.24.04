@@ -36,6 +36,8 @@ RUN git clone https://nicovince@github.com/nicovince/bin.git && \
     cd .vim && \
     find pack -name "doc" -exec vim -u NONE -c "helptags {}" -c q \; && \
     cd && \
+    mkdir -p ~/.config/ && \
+    git clone --recurse-submodules https://github.com/nicovince/nvim.git .config/nvim && \
     git clone https://nicovince@github.com/nicovince/dotfiles.git .dotfiles && \
     cd .dotfiles && ./init_config.sh <<EOF
 $(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)
@@ -46,17 +48,16 @@ EOF
 # Enable virtualenv out of the box
 RUN echo "source .venv/bin/activate" >> ~/.bashrc
 
-# Setup neovim and link config to ~/.vimrc
-RUN wget https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz && \
+# Setup neovim
+ARG NVIM_TARBALL="nvim-linux-x86_64.tar.gz"
+ARG NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/${NVIM_TARBALL}"
+RUN wget ${NVIM_URL} && \
     mkdir -p ~/.local/share && \
-    tar xzf nvim-linux64.tar.gz -C ~/.local/share && \
-    rm -f nvim-linux64.tar.gz && \
+    tar xzf ${NVIM_TARBALL} -C ~/.local/share && \
+    rm -f ${NVIM_TARBALL} && \
     mkdir -p ~/.local/bin && \
     cd ~/.local/bin/ && \
-    ln -sf ~/.local/share/nvim-linux64/bin/nvim nvim && \
-    mkdir -p ~/.config/nvim && \
-    echo 'set runtimepath^=~/.vim runtimepath+=~/.vim/after' > ~/.config/nvim/init.vim && \
-    echo 'let &packpath = &runtimepath' >> ~/.config/nvim/init.vim && \
-    echo 'source ~/.vimrc' >> ~/.config/nvim/init.vim
+    ln -sf ~/.local/share/nvim-linux-x86_64/bin/nvim nvim
+
 
 CMD /bin/bash -l
