@@ -46,6 +46,7 @@ no
 EOF
 
 # Enable virtualenv out of the box
+ENV VIRTUAL_ENV_DISABLE_PROMPT="y"
 RUN echo 'source ${HOME}/.venv/bin/activate' >> ~/.bashrc
 
 # Setup neovim
