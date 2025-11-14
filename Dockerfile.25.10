@@ -1,0 +1,62 @@
+FROM ubuntu:25.10
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y vim git python-is-python3 python3-venv python3-pip python3-dbus pipx \
+    && apt-get install -y fzf bc curl tmux file bat\
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y gh \
+    && apt-get install -y man-db sudo bash-completion \
+    && apt-get install -y shellcheck \
+    && apt-get install -y wget \
+    && apt-get install -y unminimize \
+    && yes | unminimize \
+    && echo 'done'
+
+RUN adduser sandworm \
+    && adduser sandworm --add_extra_groups sudo
+
+# pass some env variables when calling sudo
+RUN echo 'Defaults env_keep += "ftp_proxy http_proxy https_proxy no_proxy"' >> /etc/sudoers
+
+# Disable password for sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER sandworm
+WORKDIR /home/sandworm
+RUN python3 -m venv .venv && \
+    . .venv/bin/activate && \
+    pip install pre-commit ruamel.yaml
+
+RUN git clone https://nicovince@github.com/nicovince/bin.git && \
+    git clone --recurse-submodules https://nicovince@github.com/nicovince/vimrc.git .vim && \
+    echo 'source $HOME/.vim/vimrc.vim' > /home/sandworm/.vimrc && \
+    cd .vim && \
+    find pack -name "doc" -exec vim -u NONE -c "helptags {}" -c q \; && \
+    cd && \
+    mkdir -p ~/.config/ && \
+    git clone --recurse-submodules https://github.com/nicovince/nvim.git .config/nvim && \
+    git clone https://nicovince@github.com/nicovince/dotfiles.git .dotfiles && \
+    cd .dotfiles && \
+    GIT_NAME="$(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)" && \
+    GIT_EMAIL="$(git log -1 --format=%ae 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)" && \
+    echo "${GIT_NAME}\n${GIT_EMAIL}\nno" | ./init_config.sh
+
+# Enable virtualenv out of the box
+ENV VIRTUAL_ENV_DISABLE_PROMPT="y"
+RUN echo 'source ${HOME}/.venv/bin/activate' >> ~/.bashrc
+
+# Setup neovim
+ARG NVIM_TARBALL="nvim-linux-x86_64.tar.gz"
+ARG NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/${NVIM_TARBALL}"
+RUN wget ${NVIM_URL} && \
+    mkdir -p ~/.local/share && \
+    tar xzf ${NVIM_TARBALL} -C ~/.local/share && \
+    rm -f ${NVIM_TARBALL} && \
+    mkdir -p ~/.local/bin && \
+    cd ~/.local/bin/ && \
+    ln -sf ~/.local/share/nvim-linux-x86_64/bin/nvim nvim
+
+CMD /bin/bash -l
