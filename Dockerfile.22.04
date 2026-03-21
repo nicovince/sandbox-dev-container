@@ -54,4 +54,7 @@ RUN wget https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.
     echo 'let &packpath = &runtimepath' >> ~/.config/nvim/init.vim && \
     echo 'source ~/.vimrc' >> ~/.config/nvim/init.vim
 
+# Download copilot
+RUN curl -fsSL https://gh.io/copilot-install | bash
+
 CMD /bin/bash -l

@@ -59,4 +59,7 @@ RUN wget ${NVIM_URL} && \
     cd ~/.local/bin/ && \
     ln -sf ~/.local/share/nvim-linux-x86_64/bin/nvim nvim
 
+# Download copilot
+RUN curl -fsSL https://gh.io/copilot-install | bash
+
 CMD /bin/bash -l
