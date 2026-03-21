@@ -1,6 +1,7 @@
 name: Build Sandbox Container
 on:
   push:
+  workflow_dispatch:
   schedule:
    - cron: '12 20 13 * *'
 
