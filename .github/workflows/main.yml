@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ubuntuversion: [ '22.04', '24.04', '25.04', '25.10' ]
+        ubuntuversion: [ '22.04', '24.04', '25.10', '26.04' ]
     uses: ./.github/workflows/docker_build.yml
     with:
       version: "${{matrix.ubuntuversion}}"

@@ -38,7 +38,7 @@ RUN git clone https://nicovince@github.com/nicovince/bin.git && \
     find pack -name "doc" -exec vim -u NONE -c "helptags {}" -c q \; && \
     cd && \
     mkdir -p ~/.config/ && \
-    git clone --recurse-submodules https://github.com/nicovince/nvim.git .config/nvim && \
+    git clone https://github.com/nicovince/nvim.git .config/nvim && \
     git clone https://nicovince@github.com/nicovince/dotfiles.git .dotfiles && \
     cd .dotfiles && \
     GIT_NAME="$(git log -1 --format=%an 3d53849c1f33b7d6bd4f85f443f06eb7c3802c3c)" && \
@@ -58,7 +58,8 @@ RUN wget ${NVIM_URL} && \
     rm -f ${NVIM_TARBALL} && \
     mkdir -p ~/.local/bin && \
     cd ~/.local/bin/ && \
-    ln -sf ~/.local/share/nvim-linux-x86_64/bin/nvim nvim
+    ln -sf ~/.local/share/nvim-linux-x86_64/bin/nvim nvim && \
+    NVIM_AUTOINSTALL_PLUGINS=true ~/.local/bin/nvim -c 'q'
 
 # Download opencode
 RUN curl -fsSL https://opencode.ai/install | bash
