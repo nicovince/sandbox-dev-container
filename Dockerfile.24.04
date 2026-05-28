@@ -63,5 +63,7 @@ RUN wget ${NVIM_URL} && \
 
 # Download opencode
 RUN curl -fsSL https://opencode.ai/install | bash
+RUN mkdir -p ~/.local/share/opencode && \
+    mkdir -p ~/.local/state/opencode
 
 CMD /bin/bash -l
