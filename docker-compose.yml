@@ -1,0 +1,18 @@
+services:
+  dev:
+    image: ghcr.io/nicovince/sandbox-dev-container:main-26.04
+    container_name: ${PRJ_NAME:-sandbox}
+    stdin_open: true
+    tty: true
+    hostname: ${PRJ_NAME:-sandbox}
+    volumes:
+      - opencode-share:/home/sandworm/.local/share/opencode/
+      - opencode-state:/home/sandworm/.local/state/opencode/
+      - ${PRJ_DIR:-./}:/workspace  # Set PRJ_DIR before 'docker compose up'
+    working_dir: /workspace
+    entrypoint: ["tail", "-f", "/dev/null"]
+    init: true
+
+volumes:
+  opencode-share:
+  opencode-state:
