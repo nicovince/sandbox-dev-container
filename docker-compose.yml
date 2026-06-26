@@ -1,6 +1,6 @@
 services:
   dev:
-    image: ghcr.io/nicovince/sandbox-dev-container:main-26.04
+    image: ${CONTAINER_IMAGE:-ghcr.io/nicovince/sandbox-dev-container:main-26.04}
     container_name: ${PRJ_NAME:-sandbox}
     stdin_open: true
     tty: true
@@ -15,4 +15,8 @@ services:
 
 volumes:
   opencode-share:
+    labels:
+      - "com.sandbox-dev-container.description=opencode share folder (history, ...)"
   opencode-state:
+    labels:
+      - "com.sandbox-dev-container.description=opencode state folder (auth, ...)"

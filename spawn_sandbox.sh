@@ -3,6 +3,7 @@ set -euo pipefail
 
 PRJ_NAME="sandbox"
 PRJ_DIR="$(pwd)"
+CONTAINER_IMAGE=""
 ATTACH=false
 STOP=false
 COMPOSE_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -16,6 +17,7 @@ Spawn a Docker sandbox container.
 Options:
     --prj-name <name>   Project name (default: $PRJ_NAME)
     --prj-dir <dir>     Project directory (default: current directory)
+    --image <image>     Docker image to use (default: image defined in docker-compose.yml)
     --attach            Attach to an existing container instead of creating a new one
     --stop              Stop and remove the container
     --help, -h          Show this help message and exit
@@ -31,6 +33,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --prj-dir)
             PRJ_DIR="$2"
+            shift 2
+            ;;
+        --image)
+            CONTAINER_IMAGE="$2"
             shift 2
             ;;
         --attach)
@@ -53,6 +59,7 @@ done
 
 if [ "$STOP" = true ]; then
     export PRJ_NAME
+    export CONTAINER_IMAGE
     exec docker compose -p "$PRJ_NAME" -f "$COMPOSE_DIR/docker-compose.yml" down
 fi
 
@@ -63,6 +70,7 @@ fi
 
 export PRJ_NAME
 export PRJ_DIR
+export CONTAINER_IMAGE
 
 container_running() {
     docker ps --format '{{.Names}}' | grep -qxF "$PRJ_NAME"
